@@ -1,0 +1,218 @@
+---
+title: "Exponential Distribution & Central Limit Theorem"
+author: "John James"
+date: "March 25, 2016"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    fig_caption: yes
+    keep_md: yes
+    theme: journal
+    toc: yes
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+read_chunk("experiment.R")
+knitr::opts_chunk$set(fig.path = "../figures/", echo=TRUE, warning=FALSE)
+```
+
+
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<environment>>
+```
+
+##Introduction
+The exponential distribution is the probability distribution, a specific case of the gamma distribution, that describes the time between events in a Poisson process, i.e. a process in which events occur continuously and independently at a constant average rate.[1]  
+
+The central limit theorem (CLT) states that, given certain conditions, the arithmetic mean of a sufficiently large number of iterates of independent random variables, each with a well-defined expected value and well-defined variance, will be approximately normally distributed, regardless of the underlying distribution.[2]  
+
+This paper examines properties of the exponential distribution function vis-a-vis the Central Limit Theorem.
+
+##Research Question
+Specifically, the paper will address, via simulation and the application of the CLT, the following questions:
+
+1. What is the relationship between **µ**, the **theoretical mean (1/λ)** of the exponential distribution and **Sn**, the average from a sample of iid randomly generated exponentials, aka, the **sample mean**?
+2. How variable is the sample mean vis-a-vis **σ^2^**, the **theoretical variance (1/λ^2^)** of the  distribution.  
+3. Is the distribution of the sample mean approximately normal?  More specifically, does the distribution of the sample mean approximate a normal distribution with mean **µ** and variance **σ^2^/n**? 
+4. What is the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of exponentials?
+
+##Hypothesis
+Given a sample of independent and identically distributed (iid) random variables from the **exponential distribution**, a *non-normal* distribution, and a large collection of samples of averages of iid randomly generated  exponentials, I hypothesize the following:
+
+1. The sample averages will approximate µ, the theoretical mean of the exponential distribution.
+2. The sample averages will approximate σ^2^, the theoretical variance of the exponential distribution.
+3. The sample averages will approximate a **normal** distribution with mean **µ** and variance **σ^2^/n**.
+4. A collection of sample averages provides a better estimate of the theoretical population density than a collection of iid randomly generated variables of similar sample size. 
+
+##Methods
+###Exponential Distribution
+There are two assumptions inherent in the hypothesis. First, a sample of iid random variables from the exponential distribution must be extant.  The following code creates a distribution of n = 40 randomly generated exponentials with a rate parameter, λ, equal to 0.2.
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<exponentialDistribution>>
+```
+The following code calculates the distribution statistics of the 40 randomly generated exponentials.
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<expDist40Stats>>
+```
+The following code calculates the distribution statistics for a theoretical exponential distribution.  
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<theoreticalEDStats>>
+```
+
+###Sample Distribution
+The hypotheses also assume the presence of a collection of samples of averages of iid randomly generated exponentials. As such, the average of n = 40 independent and identically distributed random variables was calculated and stored in a vector.  This process was repeated 1000 times, via simulation, thereby creating a sample distribution vector of 1000 **averages** of 40 iid random variables.  
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<sampleDistribution>>
+```
+The distribution statistics for the sample of averages are calculated as follows:
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<expDistStats>>
+```
+The theoretical distribution statistics for the average of n = 40 iid randomly generated exponents are calculated as follows:
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<theoreticalStats>>
+```
+
+##Data
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<dataObservations>>
+```
+###Exponential Distribution
+The summary statistics for the randomly generated exponential distribution of sample size n = 40, are as follows:
+```{r echo = F, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+summary(expDist40)
+```
+
+###Sample Distribution
+The summary statistics for the sample of averages are as follows:
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+summary(expDistMeans)
+```
+
+##Data Analysis
+###Exponential Distribution
+Inherent in the hypothesis is the use of a non-normal underlyinig distribution; therefore, the absense of normality in the underlying distribution must be established. The following figure depicts the distribution of 40 randomly generated exponentials.  An eye test quickly reveals its departure from normality.  In fact, the figure hints to the gamma distribution as hypothesized.
+
+```{r echo = FALSE, message = F, eval = TRUE, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<plotExpDist40>>
+```
+
+Next, the distribution characteristics of the 40 random generated exponentials vis-a-vis the theoretical distribution characteristics for a distribution with rate parameter, λ = 0.2, are depicted below.
+
+                                                        |Theoretical|Empirical
+              Statistic         |Parameter|Calculation  |   Value   |  Value
+              __________________________________________|___________|___________
+              Mean              |   µ     |   1/λ       |   `r tm40`       |`r round(em40,2)`
+              Standard Deviation|   σ     |   1/λ       |   `r tsd40`       |`r round(esd40,2)`
+              Variance          |   σ^2^  |   1/λ^2^    |   `r tv40`      |`r round(ev40,2)`
+
+.
+```{r echo = TRUE, message = F, eval = TRUE, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<expDist40CI>>
+```
+The 95% confidence interval for the theoretical mean µ computed above is **[`r round(edcill,2)`,`r round(edciul,2)`]**. Since the interval includes the theoretical mean µ, the empirical average tends to approximate the theoretical mean.
+
+The following figure juxtaposes the empirical and theoretical distributions.
+```{r echo = FALSE, message = F, eval = TRUE, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<plotEDdensities>>
+```
+
+The quantitative and graphical data tend to indicate the statistical equivalence of the theoretical and empirical distributions observed. 
+
+###Sample Distribution of Means versus Distribution Theoretical Mean
+The theoretical mean of a sample of exponentials with rate parameter λ = 0.2 is 5. The null hypothesis is that the sample average of a randomly generated set of exponentials is statistically equivalent to the theoretical mean.  Let X equal the average of n = 40 randomly generated exponentials and µ equal 5, the theoretical mean of a sample of n randomly generated exponentials. Then the following hypothesis is put forth:
+
+                    H0: X = µ
+                    Ha: X <> µ
+                    
+Setting alpha to 0.5, the null hypothesis is assumed unless the theoretical mean falls outside of the 95% confidence interval for the sample. The 95% confidence interval for the mean of the sample averages was calculated below.
+```{r echo = TRUE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<sampleAveragesCI>>
+```
+
+The 95% confidence interval of means of the sample averages was **[`r round(sacill,2)`, `r round(saciul,2)`]** which includes the theoretical mean of the distribution. Therefore, the null hypothesis is not rejected. 
+
+Furthermore, the following histogram shows the distribution of samples means converged about the theoretical mean µ = 5, depicted by the blue vertical line.  
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<meansPlot>>
+```
+
+###Sample Distribution Variance versus Theoretical Variance Exponential Distribution
+The empirical and theoretical variances are depicted below.
+
+              Statistic                                     | Value   
+              ______________________________________________|_________________
+              Empirical Variance from Sample of Averages    | `r round(ev,2)`
+              Theoretical Variance of Distribution          | `r round(tv,2)`
+
+The variances appear to be quite close. 
+
+###Normality of Sample Distribution
+The following normal quartile plot indicates that the sample distribution of averages is indeed normally distributed.
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<renderNQP>>
+```
+
+Further, a density plot of the sample distribution was juxtaposed against the random normal distribution of the theoretical distribution of averages with mean **µ** and variance **σ^2^/n**.  
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<renderDensity>>
+```
+
+This plot provides reasonably compelling support for the assertion that the distribution of averages of randomly generated iid variables appoximates the theoretical distribution with mean **µ** and variance **σ^2^/n**.
+
+###Samples versus Averages of Samples
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<expDist1000>>
+```
+In this section, we explore the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of 40 exponentials. The following figure illustrates the distribution of a large collection (n = 1000) exponents.  
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<expDist1000Plot>>
+```
+
+The summary statistics for this distribution are as follows:
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+summary(expDist1000)
+```
+
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<expDist1000Stats>>
+```
+
+The following compares the distribution statistics of this large collection of random exponents and those of the collection of averages.
+
+                                               Random
+              Statistic         |Parameter|   Exponents |  Averages
+              __________________________________________|___________
+              Mean              |   µ     | `r round(em1000,2) `        | `r round(em,2)`
+              Standard Deviation|   σ     | `r round(esd1000,2)`        | `r round(esd,2)`
+              Variance          |   σ^2^  | `r round(ev1000,2)`       | `r round(ev,2)`
+
+Whereas both samples converge on the theoretical mean, the samples of averages provides a much more precise estimate of the theoretical distribution.  The following graphically compares the two density distributions. 
+```{r echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=FALSE)}
+<<plotDualDensities>>
+```
+
+As revealed above, both distributions are centered around a common mean; however, the collection of averages provides a better estimate of the theoretical distribution.
+
+##Results
+The following summarizes the answers to the research questions presented.
+
+1. What is the relationship between **µ**, the **theoretical mean (1/λ)** of the exponential distribution and **Sn**, the average from a sample of iid randomly generated exponentials, aka, the **sample mean**?
+    + The averages of the tend to approximate the theoretical mean µ, such that the distribution of multiple samples of averages will be normally distributed about the the theoretical mean.  
+  
+2. How variable is the sample mean vis-a-vis **σ^2^**, the **theoretical variance (1/λ^2^)** of the  distribution.  
+    + The variability of the sample averages closely approximates the variability of the theoretical variance 
+  
+3. Is the distribution of the sample mean approximately normal?  More specifically, does the distribution of the sample mean approximate a normal distribution with mean **µ** and variance **σ^2^/n**? 
+    + The distribution of the averages is normally distributed about the theoretical mean. For large sample sizes, the normal distribution approximates a normal distribution with mean **µ** and variance **σ^2^/n**.
+
+4. What is the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of exponentials?
+    + Both distributions estimate the mean; however, the collection of averages provides a much more precise estimate of the theoretical distribution.
+
+##References
+1. Wikipedia. (2016, March 25). Exponential Distribution. Retrieved from Wikipedia.org: https://en.wikipedia.org/wiki/Exponential_distribution
+2. Wikipedia. (2016, March 25). Central Limit Theorem (CLT). Retrieved from Wikipedia:     https://en.wikipedia.org/wiki/Central_limit_theorem#Classical_CLT
+
