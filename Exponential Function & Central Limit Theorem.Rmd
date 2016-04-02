@@ -1,0 +1,159 @@
+---
+title: "Exponential Distribution & Central Limit Theorem"
+author: "John James"
+date: "March 25, 2016"
+output:
+  html_document:
+    fig_caption: yes
+    keep_md: yes
+    theme: journal
+  word_document: default
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(kfigr)
+library(printr)
+library(reshape2)
+read_chunk("exponentials.R")
+knitr::opts_chunk$set(fig.path = "../figures/", fig.height = 4, fig.width = 10, echo=TRUE, warning=FALSE)
+```
+
+
+```{r environment, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<environment>>
+```
+
+```{r theoreticalValues, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<theoreticalValues>>
+```
+
+```{r sampleMeans, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<sampleMeans>>
+```
+
+```{r compare, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<compare>>
+```
+
+```{r t.test, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<t.test>>
+```
+
+
+```{r sample1000, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+<<sample1000>>
+```
+
+#Introduction
+The exponential distribution is the probability distribution, a specific case of the gamma distribution, that describes the time between events in a Poisson process, i.e. a process in which events occur continuously and independently at a constant average rate.[1]  
+
+The central limit theorem (CLT) states that, given certain conditions, the arithmetic mean of a sufficiently large sample size, n, of independent random variables, each with a well-defined expected value and well-defined variance, will be approximately normally distributed, regardless of the underlying distribution.[2] Moreover, the mean of a sampling distribution of means will appoximate the population mean and the sampling distribution variance will approximate the population variance divided by the sample size.
+
+This paper examines properties of the exponential distribution vis-a-vis the central limit theorem. Specifically, the paper will address, via simulation and the application of the CLT, the following **research questions:**
+
+1. What is the relationship between **µ**, the **theoretical mean (1/λ)** of the exponential distribution, and the **sampling distribution of means** of randomly generated exponentials?
+2. How variable is the **sampling distribution of means** vis-a-vis the **theoretical mean** with expected variance equal to **(1/n)(1/(λ^2^)**?
+3. Is the sampling distribution of means approximately normal?  More specifically, does the sampling distribution approximate a normal distribution with mean **µ** and variance **σ^2^/n**? 
+4. What is the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of exponentials?
+
+#Methods
+To create a sampling distribution of means of n = 40 randomly generated exponentials, 4000 random exponents were generated, using the the rexp function in R, and stored in a 1000 x 40 matrix. Using the apply function, the mean of each row of 40 exponentials was calculated creating a **sampling distribution of means** of size N = 1000 (`r figr("sampleMeansCode", TRUE, type="Code")`). To ascertain the **equivalency of the theoretical mean and the sampling distribution mean**, A one sample t-test was conducted (`r figr("t.testCode", TRUE, type="Code")`) and a graphical representation of the sampling distribution vis-a-vis the theoretical mean was rendered. To evaluate **variability of the sampling and theoretical distributions**, the mean, variance and standard error of the sampling distribution were calculated and presented vis-a-vis the theoretical expected values and densities of the theoretical and sampling distributions were prepared to graphically compare the relative distribution variances. A normal quartile plot was rendered to show **normality of the sampling distribution**. Lastly, to illuminate the difference between the distribution of a **large collection of random exponentials** and the distribution of a **large collection of averages** of 40 exponentials, a large collection of n = 1000 exponentials was generated (`r figr("sample1000", TRUE, type="Code")`) and comparative density plots were prepared and rendered. 
+
+#Analysis
+
+##Sample Mean Versus Theoretical Mean
+According to the central limit theorem, the mean of the sampling distribution (sample mean) should approximate the theoretical mean of the distribution.  The theoretical mean for an exponential distribution with λ = 0.2 is 5.  The following hypothesis was tested to show equivalency.
+
+    H0: X =  μ  Where {X is the sample mean} 
+    Ha: X <> μ        {μ is the theoretical mean for λ = 0.2}
+    
+The table below shows the sample mean to be within the 95% confidence interval of the theoretical mean.  Further, the p.value is significantly higher than α = 0.5.  Therefore the null hypothesis is not rejected.  The sample mean is statistically equivalent to the theoretical mean.  
+
+```{r meanTest, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+meanTest
+```
+
+`r figr("densityPlot", TRUE, type="Figure")` shows the sampling distribution of means about the theoretical mean, depicted by the blue vertical line. 
+
+##Sample Variance versus Theoretical Variance
+The table below shoes that the equivalency of the variances of the sample and theoretical distributions. 
+```{r comparetbl, echo = FALSE, message = F, eval = T, tidy=TRUE, tidy.opts=list(comment=TRUE)}
+compare
+```
+
+`r figr("dualDensities1", TRUE, type="Figure")` juxtaposes the sampling and theoretical distributions of the means, graphically demonstrating the equality of the variances of the distributions. 
+
+##Distribution of Sample Means
+`r figr("nqp", TRUE, type="Figure")` shows a normal quartile plot for the sampling distribution. As predicted by the central limit theorem, the sampling distribution of means is indeed normal.
+
+##Distribution of Exponentials versus Distribution of Means
+The purpose of this section is to illuminate the difference between the distribution of a **large collection of random exponentials** and the distribution of a **large collection of averages** of 40 exponentials.  The distribution of a large collection of random exponentials assumes a gamma distribution, whereas the distribution of means assumes a normal distribution concentrated on the theoretical mean as graphically presented in `r figr("dualDensities2", TRUE, type="Figure")`.  Moreover, the variance of the sampling distribution is (1/n) times the variance of the distribution of exponents.
+
+#Conclusion
+The following summarizes the answers to the research questions presented.
+
+1. What is the relationship between **µ**, the **theoretical mean (1/λ)** of the exponential distribution and the **sampling distribution of means** of randomly generated, exponentials?
+    + The sample mean approximates the theoretical mean µ; moreover, the sampling distribution of means is normal about the theoretical mean.  
+  
+2. How variable is the **sampling distribution of means** vis-a-vis the **theoretical mean** with expected variance equal to **(1/n)(1/(λ^2^)**?
+    + The variability of the sample mean closely approximates the *expected* variability of the theoretical variance.
+  
+3. Is the distribution of the sample mean approximately normal?  More specifically, does the distribution of the sample mean approximate a normal distribution with mean **µ** and variance **σ^2^/n**? 
+    + The sampling distribution of means is normal about the theoretical mean; moreover, the distribution approximates a normal distribution with mean **µ** and variance **σ^2^/n**.
+
+4. What is the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of exponentials?
+    + Both distributions estimate the mean; however, the collection of means is normally distributed and has a variance (1/n) times the variance of the distribution of exponents, demonstrating that more sampling data results in less variability in the data. 
+
+
+##References
+1. Wikipedia. (2016, March 25). Exponential Distribution. Retrieved from Wikipedia.org: https://en.wikipedia.org/wiki/Exponential_distribution
+2. Wikipedia. (2016, March 25). Central Limit Theorem (CLT). Retrieved from Wikipedia:     https://en.wikipedia.org/wiki/Central_limit_theorem#Classical_CLT
+
+#Appendix
+
+##Figures
+```{r densityPlot, anchor = "Figure", echo = FALSE, message = F, eval = T}
+<<densityPlot>>
+```
+
+`r figr("densityPlot", TRUE, type="Figure")`: Density of Samples Means 
+
+```{r dualDensities1, anchor = "Figure", echo = FALSE, message = F, eval = T}
+<<dualDensities>>
+```
+
+`r figr("dualDensities1", TRUE, type="Figure")`: Density of Theoretical versus Sample Distributions
+
+```{r nqp, anchor = "Figure", echo = FALSE, message = F, eval = T, tidy=TRUE}
+<<nqp>>
+```
+
+`r figr("nqp", TRUE, type="Figure")`: Normal Quartile Plot of Empirical Means (n=1000)
+
+```{r dualDensities2, anchor = "Figure", echo = FALSE, message = F, eval = T}
+<<dualDensities2>>
+```
+
+`r figr("dualDensities2", TRUE, type="Figure")`: Sampling Distribution vis-a-vis Distribution of Exponentials
+
+
+##Code
+`r figr("sampleMeansCode", TRUE, type="Code")`: Code to simulate and create sample distribution of means
+
+```{r sampleMeansCode, anchor = "Code", echo = TRUE, message = F, eval = F}
+<<sampleMeans>>
+```
+
+`r figr("t.testCode", TRUE, type="Code")`: Code to conduct one-sample t.test of sample mean vis-a-vis theoretical mean
+
+```{r t.testCode, anchor = "Code", echo = TRUE, message = F, eval = F}
+<<t.test>>
+```
+
+`r figr("sample1000Code", TRUE, type="Code")`: Code to render normal quartile plot of sample distribution of means
+
+```{r sample1000Code, anchor = "Code", echo = TRUE, message = F, eval = F}
+<<sample1000>>
+```
